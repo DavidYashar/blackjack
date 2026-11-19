@@ -1,0 +1,331 @@
+@import 'tailwindcss';
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-neutral-950 text-neutral-100 antialiased;
+  font-family: 'Spectral', Georgia, 'Times New Roman', serif;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* Scope the viewport lock to /app. The public site remains a normal page,
+   including after client navigation; a global stylesheet can outlive a route. */
+html:has(.app-shell),
+body:has(.app-shell) {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.app-shell [data-scroll] {
+  overscroll-behavior-y: contain;
+}
+
+/* The app runs on a phone whose OS reserves
+   the top for a notch or status bar and the bottom for the home indicator.
+   Padding to at least the inset keeps content out from under both, and falls
+   back to the plain spacing on anything without them — a desktop browser, or an
+   older phone.
+
+   This only works together with viewport-fit=cover in the layout's viewport
+   export: without it every env(safe-area-inset-*) resolves to zero and this
+   silently becomes ordinary padding.
+
+   A browser on a computer has no insets of its own, so in the simulator
+   (npm run dev -- --simulator) the stand-in host sets the simulated phone's as
+   --safe-area-inset-*. They come first here, and the phone's own
+   value is what is used wherever they are not set. */
+.app-shell {
+  padding-top: max(2.5rem, var(--safe-area-inset-top, env(safe-area-inset-top)));
+  padding-bottom: max(0.75rem, var(--safe-area-inset-bottom, env(safe-area-inset-bottom)));
+  padding-left: max(1.25rem, var(--safe-area-inset-left, env(safe-area-inset-left)));
+  padding-right: max(1.25rem, var(--safe-area-inset-right, env(safe-area-inset-right)));
+}
+
+.btn {
+  @apply rounded-lg bg-neutral-100 px-4 py-2.5 text-center font-medium text-neutral-950
+    transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-40;
+}
+
+.card {
+  @apply rounded-xl border border-neutral-800 bg-neutral-900/60 p-4;
+}
+
+code {
+  @apply rounded bg-neutral-800 px-1.5 py-0.5 font-mono text-sm break-all;
+}
+
+/* Terminal caret. step-end so it snaps rather than fades. */
+@keyframes caret-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.caret {
+  animation: caret-blink 1.06s step-end infinite;
+}
+
+/* A card arriving from the shoe. The wrapper animates so the card's own rotation
+   stays intact, and reduced motion turns the whole thing off. */
+@keyframes card-deal {
+  from {
+    opacity: 0;
+    transform: translate(74px, -120px) rotate(16deg) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.card-deal {
+  animation: card-deal 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* The dealer's hole card turning over. */
+@keyframes card-flip {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(180deg);
+  }
+}
+
+.card-flip {
+  transform-style: preserve-3d;
+  animation: card-flip 380ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.card-face-3d {
+  backface-visibility: hidden;
+}
+
+.card-back-3d {
+  backface-visibility: hidden;
+  transform: rotateY(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-deal {
+    animation: none;
+  }
+  .card-flip {
+    animation: none;
+    transform: rotateY(180deg);
+  }
+}
+
+/* Keys on the table: a raised face with a solid darker base under it, so a tap
+   reads as pressing something physical rather than clicking a web button. The form
+   is borrowed; the colours are the deck's own. */
+.key {
+  @apply flex items-center justify-center rounded-xl text-[16px] font-semibold;
+  height: 58px;
+  transition:
+    transform 90ms ease,
+    box-shadow 90ms ease,
+    opacity 120ms ease;
+}
+
+.key-cream {
+  background: linear-gradient(180deg, #fdfaf1 0%, #f3eddc 100%);
+  color: #14110c;
+  box-shadow:
+    0 6px 0 #b7af9b,
+    0 8px 12px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.key-gold {
+  background: linear-gradient(180deg, #d8a94e 0%, #c08d33 100%);
+  color: #1a1305;
+  box-shadow:
+    0 6px 0 #8a6320,
+    0 8px 12px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.key-ink {
+  border: 1px solid rgba(201, 151, 63, 0.4);
+  background: linear-gradient(180deg, #1a1917 0%, #0b0b0a 100%);
+  color: #f7f2e4;
+  box-shadow:
+    0 6px 0 #000000,
+    0 8px 12px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.key-ink:not(:disabled):active {
+  box-shadow:
+    0 2px 0 #000000,
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.key-ghost {
+  border: 1px solid rgba(201, 151, 63, 0.6);
+  background: linear-gradient(180deg, rgba(22, 66, 46, 0.9) 0%, rgba(12, 40, 28, 0.95) 100%);
+  color: #f7f2e4;
+  box-shadow:
+    0 6px 0 rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.key:not(:disabled):active {
+  transform: translateY(4px);
+}
+
+.key-cream:not(:disabled):active {
+  box-shadow:
+    0 2px 0 #b7af9b,
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.key-gold:not(:disabled):active {
+  box-shadow:
+    0 2px 0 #8a6320,
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.key-ghost:not(:disabled):active {
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.55);
+}
+
+.key:disabled {
+  opacity: 0.28;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .key {
+    transition: none;
+  }
+  .key:not(:disabled):active {
+    transform: none;
+  }
+}
+
+/* A key arriving in place of the four action keys. */
+@keyframes key-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.key-in {
+  animation: key-in 200ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .key-in {
+    animation: none;
+  }
+}
+
+/* Spectral, bundled locally so nothing is fetched from a third party.
+   A screen serif that holds up at 10 px and carries tabular figures. */
+@font-face {
+  font-family: 'Spectral';
+  src: url('/fonts/spectral.woff2') format('woff2');
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* The round's result mark, arriving in the middle of the felt. */
+@keyframes mark-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.mark-in {
+  animation: mark-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mark-in {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Home entrance: two cards arrive, then the table lights up           */
+/* ------------------------------------------------------------------ */
+
+@keyframes hero-left-in {
+  from {
+    opacity: 0;
+    transform: translate3d(-96px, 16px, 0) rotate(-26deg) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(-8deg) scale(1);
+  }
+}
+
+@keyframes hero-right-in {
+  from {
+    opacity: 0;
+    transform: translate3d(96px, -10px, 0) rotate(26deg) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(9deg) scale(1);
+  }
+}
+
+@keyframes hero-light-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* One shot, four seconds, no loop. */
+.hero-left {
+  animation: hero-left-in 1800ms cubic-bezier(0.16, 0.84, 0.24, 1) 0ms both;
+}
+
+.hero-right {
+  animation: hero-right-in 1850ms cubic-bezier(0.16, 0.84, 0.24, 1) 120ms both;
+}
+
+.hero-light {
+  animation: hero-light-in 1600ms ease-out 2400ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-left,
+  .hero-right,
+  .hero-light {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .hero-left {
+    transform: rotate(-8deg);
+  }
+  .hero-right {
+    transform: rotate(9deg);
+  }
+}
